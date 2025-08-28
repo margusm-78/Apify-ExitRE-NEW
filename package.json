@@ -1,0 +1,13 @@
+{
+  "name": "exitrealty-jacksonville-scraper",
+  "version": "1.0.0",
+  "description": "Apify actor to scrape real estate agent data from Exit Realty's Jacksonville, FL listings.",
+  "main": "main.js",
+  "scripts": {
+    "start": "node main.js"
+  },
+  "dependencies": {
+    "apify": "^3.3.0",
+    "puppeteer": "^21.3.3"
+  }
+}
