@@ -1,4 +1,4 @@
-const Apify = require('apify');
+const { Actor } = require('apify');
 
 /*
  * This Apify actor scrapes all real estate agents from the
@@ -10,20 +10,22 @@ const Apify = require('apify');
  * default dataset.  Once the actor has run, the dataset can be
  * exported as a CSV (for example to upload into a marketing
  * platform like Brevo).
- */
+*/
 
-Apify.main(async () => {
-  const { log } = Apify.utils;
+// In Apify SDK v3 the Actor class exposes the main() method.  Using
+// Actor.main here avoids the "Apify.main is not a function" error.
+Actor.main(async () => {
+  const { log } = Actor.utils;
 
   // Open the default dataset; this will store our results.  If you
   // prefer to store to a named dataset, pass a custom name here.
-  const dataset = await Apify.openDataset();
+  const dataset = await Actor.openDataset();
 
   // Launch a headless browser.  When running on the Apify platform
   // you can omit the Puppeteer launch options since the platform
   // provides a pre‑configured browser instance.  We explicitly
   // request headless mode here for clarity.
-  const browser = await Apify.launchPuppeteer({ headless: true });
+  const browser = await Actor.launchPuppeteer({ headless: true });
   const page = await browser.newPage();
 
   // Iterate through all eight pages of the Jacksonville agent list.
