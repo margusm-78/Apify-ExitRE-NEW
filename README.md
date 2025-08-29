@@ -1,58 +1,42 @@
-# ExitRealty Jacksonville Scraper
+# ExitRealty Jacksonville Scraper (Apify Actor)
 
-This repository contains an [Apify](https://apify.com/) actor that scrapes
-contact information for every real estate agent listed on the Exit Realty
-website for the Jacksonville, Florida area.
+Scrapes all **EXIT Realty** agents for **Jacksonville, FL** across 8 pages and outputs **Name, Phone, Email**.
+Works on Apify with Puppeteer + system Chrome.
 
-The target site paginates the agent cards over eight pages, each of which
-contains the agent's name, mobile phone number and email address.  The
-`main.js` script uses Puppeteer via the Apify SDK to load each page,
-select the relevant elements and push structured objects into the default
-Apify dataset.  Once the actor has run, you can export the dataset as a
-CSV file suitable for uploading into marketing platforms like [Brevo](https://www.brevo.com/).
+## Files
+- `Dockerfile` — uses `apify/actor-node-puppeteer-chrome:20` (Chrome preinstalled).
+- `package.json` — Apify SDK v3 + Puppeteer v24.
+- `main.js` — scraper (configurable pages, de-duplication, optional Brevo CSV output).
+- `INPUT_SCHEMA.json` — UI inputs in Apify console.
+- `agents.csv` — placeholder file so the repo shows a CSV example.
 
-## Usage
+## Why this image?
+Using `apify/actor-node-puppeteer-chrome:20` avoids the **ENOENT** error where Puppeteer
+couldn’t find a Chrome binary. We also set `PUPPETEER_SKIP_DOWNLOAD=true` so Puppeteer won’t
+try to download Chromium during install.
 
-1. Clone this repository or add its contents to a new Apify actor via the
-   Apify console.
-2. Install the dependencies locally with `npm install`, or let Apify
-   handle it automatically when the actor builds.
-3. Run the actor locally for testing:
+## Inputs (via Apify UI)
+- `startUrl` (default: Jacksonville agents URL)
+- `totalPages` (default: 8)
+- `emitBrevoCsv` (boolean; if true, writes `brevo.csv` to the key‑value store)
 
-   ```sh
-   apify run
-   ```
+## Output
+- Items are pushed to the default **Dataset** with fields: `Name`, `Phone`, `Email`, `SourcePage`.
+- If `emitBrevoCsv` is true, a Brevo‑ready CSV is saved in the **Key‑Value Store** as `brevo.csv`
+  with columns: `EMAIL, FIRSTNAME, LASTNAME, SMS`.
 
-   or, if not using the Apify CLI:
+## Run (Apify)
+1. Create an actor from this repo.
+2. Build — the Dockerfile will be used automatically.
+3. Run with (optionally):
+```json
+{
+  "totalPages": 8,
+  "emitBrevoCsv": true
+}
+```
 
-   ```sh
-   node main.js
-   ```
-
-4. When the run completes, open the default dataset in the Apify console
-   or export it as a CSV from the command line:
-
-   ```sh
-   apify dataset:download --format csv --output agents.csv
-   ```
-
-## CSV File for Brevo
-
-To comply with Brevo's import requirements, create a CSV file containing the
-following columns:
-
-| Name              | Phone       | Email                   |
-|-------------------|-------------|-------------------------|
-| Jane Doe          | 904 555 1234| janedoe@example.com     |
-| ...               | ...         | ...                     |
-
-After running this actor on the Apify platform, you can download the
-resulting dataset in CSV format and upload it directly into Brevo to
-add the agents as new contacts.
-
-## Disclaimer
-
-This scraper is provided for educational and demonstration purposes.
-Respect the target website’s terms of service and robots.txt, and obtain
-the necessary permissions before using the collected data for commercial
-purposes.
+## Notes
+- Phone numbers are normalized to **E.164** (`+1XXXXXXXXXX`) when possible.
+- The scraper looks for each card’s **“View Details”** button, then extracts name/phone/email from that card’s text.
+- Basic de‑duplication is done on `(email|phone|name)`.

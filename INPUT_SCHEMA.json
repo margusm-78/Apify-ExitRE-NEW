@@ -1,0 +1,29 @@
+{
+  "title": "EXIT Realty Jacksonville Scraper",
+  "type": "object",
+  "schemaVersion": 1,
+  "properties": {
+    "startUrl": {
+      "title": "Start URL",
+      "type": "string",
+      "default": "https://exitrealty.com/agents/area-Jacksonville__FL__United_States",
+      "description": "Start URL for Jacksonville EXIT Realty agents list (page 1).",
+      "editor": "textfield"
+    },
+    "totalPages": {
+      "title": "Total pages to crawl",
+      "type": "integer",
+      "default": 8,
+      "description": "Number of paginated pages to process (defaults to 8).",
+      "editor": "number"
+    },
+    "emitBrevoCsv": {
+      "title": "Also emit Brevo CSV to key-value store",
+      "type": "boolean",
+      "default": false,
+      "description": "If true, saves `brevo.csv` (EMAIL, FIRSTNAME, LASTNAME, SMS) to the key-value store.",
+      "editor": "checkbox"
+    }
+  },
+  "required": []
+}
